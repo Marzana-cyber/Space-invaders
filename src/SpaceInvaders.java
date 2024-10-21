@@ -5,6 +5,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import javax.swing.*;
+import java.util.Random;
 
 public class SpaceInvaders extends JPanel implements ActionListener, KeyListener {
     //board
@@ -47,8 +48,18 @@ public class SpaceInvaders extends JPanel implements ActionListener, KeyListener
     int shipX = tileSize*columns/2 - tileSize;
     int shipY = boardHeight - tileSize*2;
     int shipVelocityX = tileSize; //ship moving speed
-
     Block ship;
+
+    //aliens
+    ArrayList<Block> alienArray;
+    int alienWidth = tileSize*2;
+    int alienHeight = tileSize;
+    int alienX = tileSize;
+    int alienY = tileSize;
+
+    int alienRows = 2;
+    int alienColumns = 3;
+    int alienCount = 0; //number of aliens to defeat
 
     Timer gameLoop;
 
@@ -74,9 +85,11 @@ public class SpaceInvaders extends JPanel implements ActionListener, KeyListener
 
 
         ship = new Block(shipX, shipY, shipWidth, shipHeight, shipImg);
+        alienArray = new ArrayList<Block>();
 
         //game Timer
         gameLoop = new Timer(1000/60, this); //1000/60 = 16.7
+        createAliens();
         gameLoop.start();
     }
 
@@ -87,6 +100,32 @@ public class SpaceInvaders extends JPanel implements ActionListener, KeyListener
 
     public void draw(Graphics g) {
         g.drawImage(ship.img, ship.x, ship.y, ship.width, ship.height, null);
+
+        //aliens
+        for (int i = 0; i < alienArray.size(); i++) {
+            Block alien = alienArray.get(i);
+            if (alien.alive) {
+                g.drawImage(alien.img, alien.x, alien.y, alien.width, alienHeight, null);
+            }
+        }
+    }
+
+    public void createAliens() {
+        Random random = new Random();
+        for (int r = 0; r < alienRows; r++) {
+            for (int c = 0; c < alienColumns; c++) {
+                int randomImgIndex = random.nextInt(alienImgArray.size());
+                Block alien = new Block(
+                    alienX + c*alienWidth,
+                    alienY + r*alienHeight,
+                    alienWidth,
+                    alienHeight,
+                    alienImgArray.get(randomImgIndex)
+                );
+                alienArray.add(alien);
+            }
+        }
+        alienCount = alienArray.size();
     }
 
     @Override
@@ -102,10 +141,10 @@ public class SpaceInvaders extends JPanel implements ActionListener, KeyListener
 
     @Override
     public void keyReleased(KeyEvent e) {
-       if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+       if (e.getKeyCode() == KeyEvent.VK_LEFT && ship.x - shipVelocityX >= 0) {
         ship.x -= shipVelocityX; //move left one title
        }
-       else if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+       else if (e.getKeyCode() == KeyEvent.VK_RIGHT && ship.x + shipWidth + shipVelocityX <= boardWidth) {
         ship.x += shipVelocityX; //move RIGHT one title
        }
     }
