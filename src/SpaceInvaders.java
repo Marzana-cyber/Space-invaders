@@ -123,6 +123,7 @@ public class SpaceInvaders extends JPanel implements ActionListener, KeyListener
             Block bullet = bulletArray.get(i);
             if (!bullet.used) {
                 g.drawRect(bullet.x, bullet.y, bullet.width, bullet.height);
+                //g.fillRect(bullet.x, bullet.y, bullet.width, bullet.height);
             }
         }
     }
@@ -152,6 +153,16 @@ public class SpaceInvaders extends JPanel implements ActionListener, KeyListener
         for (int i = 0; i < bulletArray.size(); i++) {
             Block bullet = bulletArray.get(i);
             bullet.y += bulletVelocityY;
+
+            //bullet collision width aliens
+            for (int j = 0; j < alienArray.size(); j++) {
+                Block alien = alienArray.get(j);
+                if (!bullet.used && alien.alive && detectCollision(bullet, alien)) {
+                    bullet.used = true;
+                    alien.alive = false;
+                    alienCount--;
+                }
+            }
         }
     }
 
@@ -171,6 +182,13 @@ public class SpaceInvaders extends JPanel implements ActionListener, KeyListener
             }
         }
         alienCount = alienArray.size();
+    }
+
+    public boolean detectCollision(Block a, Block b) {
+        return a.x < b.x + b.width &&
+               a.x + a.width > b.x &&
+               a.y < b.y + b.height &&
+               a.y + a.height > b.y;
     }
 
     @Override
