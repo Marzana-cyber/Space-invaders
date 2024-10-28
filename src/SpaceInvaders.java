@@ -194,6 +194,7 @@ public class SpaceInvaders extends JPanel implements ActionListener, KeyListener
             alienRows = Math.min(alienRows + 1, rows - 6); // cap row at 16-6 = 10
             alienArray.clear();
             bulletArray.clear();
+            alienVelocityX = 1;
             createAliens();
         }
     }
@@ -240,7 +241,18 @@ public class SpaceInvaders extends JPanel implements ActionListener, KeyListener
 
     @Override
     public void keyReleased(KeyEvent e) {
-       if (e.getKeyCode() == KeyEvent.VK_LEFT && ship.x - shipVelocityX >= 0) {
+        if (gameOver) { //any key to restart
+            ship.x = shipX;
+            alienArray.clear();
+            bulletArray.clear();
+            score = 0;
+            alienVelocityX = 1;
+            alienColumns = 2;
+            gameOver = false;
+            createAliens();
+            gameLoop.start();
+        }
+       else if (e.getKeyCode() == KeyEvent.VK_LEFT && ship.x - shipVelocityX >= 0) {
         ship.x -= shipVelocityX; //move left one title
        }
        else if (e.getKeyCode() == KeyEvent.VK_RIGHT && ship.x + shipWidth + shipVelocityX <= boardWidth) {
